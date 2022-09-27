@@ -22,22 +22,28 @@ if __name__ == '__main__':
     #
     # w_min et w_max : sont les poids de départs. Quand ils se rapprochent de 0, l'algorithme converge plus rapidement.
 
-    batch_size = 1  # nombre de données lues à chaque fois
+    batch_size = 5  # nombre de données lues à chaque fois
     nb_epochs = 10  # nombre de fois que la base de données sera lue
     eta = 0.001  # taux d'apprentissage
     w_min = -0.001  # poids minimum
     w_max = 0.001  # poids maximum
+    nb_neurones_cc = 784 # nombre de neurones de la couche cachée
 
     # on lit les données
     ((data_train, label_train), (data_test, label_test)) = torch.load(gzip.open('mnist.pkl.gz'))
 
     # on initialise le modèle et ses poids
     # taille du tenseur w = 784 (data_train.shape[1]) * 10 (label_train.shape[1]) = 28*28*10 = 7840
-    w = torch.empty((data_train.shape[1], label_train.shape[1]), dtype=torch.float)
+    w = torch.empty((data_train.shape[1], nb_neurones_cc), dtype=torch.float)
+    wcc = torch.empty((nb_neurones_cc, label_train.shape[1]), dtype=torch.float)
+
     # taille du tenseur b = 1*10 = 10
     b = torch.empty((1, label_train.shape[1]), dtype=torch.float)
+    bcc = torch.empty((1, nb_neurones_cc), dtype=torch.float)
     torch.nn.init.uniform_(w, w_min, w_max)
+    torch.nn.init.uniform_(wcc, w_min, w_max)
     torch.nn.init.uniform_(b, w_min, w_max)
+    torch.nn.init.uniform_(bcc, w_min, w_max)
 
     nb_data_train = data_train.shape[0]
     nb_data_test = data_test.shape[0]
@@ -52,16 +58,23 @@ if __name__ == '__main__':
             # on récupère les entrées
             # taille du tenseur x = 5 * 784 = 3920
             x = data_train[i:i + batch_size]
+            # on calcule la sortie de la couche cachée
+            ycc = 1 / (1 + torch.exp(- (torch.mm(x, w) + bcc)))
             # on calcule la sortie du modèle
             # taille du tenseur y = 5 * 10 = 50
-            y = torch.mm(x, w) + b
+            y = torch.mm(ycc, wcc) + b 
             # on regarde les vrais labels
             # taille du tenseur t = 5 * 10 = 50
             t = label_train[i:i + batch_size]
             # on met à jour les poids
             # taille du tenseur du gradiant = 5 * 10 = 50
             grad = (t - y)
-            w += eta * torch.mm(x.T, grad)
+            gradcc = ycc * (1 - ycc) * torch.mm(grad, wcc.T)
+
+            wcc += eta * torch.mm(ycc.T, grad)
+            w += eta * torch.mm(x.T, gradcc)
+
+            bcc += eta * gradcc.sum(axis=0)
             b += eta * grad.sum(axis=0)
 
         # test du modèle (on évalue la progression pendant l'apprentissage)
@@ -74,7 +87,8 @@ if __name__ == '__main__':
             x = data_test[i:i + 1]
             # on calcule la sortie du modèle
             # taille du tenseur y = 1 * 10 = 10
-            y = torch.mm(x, w) + b
+            ycc = 1 / (1 + torch.exp(- (torch.mm(x, w) + bcc)))
+            y = torch.mm(ycc, wcc) + b 
             # on regarde le vrai label
             # taille du tenseur t = 1 * 10 = 10
             t = label_test[i:i + 1]
