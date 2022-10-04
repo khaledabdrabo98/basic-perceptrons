@@ -14,7 +14,8 @@ import gzip, numpy, torch
 if __name__ == '__main__':
 	batch_size = 5 # nombre de données lues à chaque fois
 	nb_epochs = 10 # nombre de fois que la base de données sera lue
-	eta = 0.00001 # taux d'apprentissage
+	eta = 0.001 # taux d'apprentissage
+	nb_neurones_cc = 4 # nombre de neurones dans la couche cachée 
 	
 	# on lit les données
 	((data_train,label_train),(data_test,label_test)) = torch.load(gzip.open('mnist.pkl.gz'))
@@ -25,8 +26,16 @@ if __name__ == '__main__':
 	test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 	# on initialise le modèle et ses poids
-	model = torch.nn.Linear(data_train.shape[1],label_train.shape[1])
-	torch.nn.init.uniform_(model.weight,-0.001,0.001)
+	model = torch.nn.Sequential(
+		torch.nn.Linear(data_train.shape[1], nb_neurones_cc),
+		torch.nn.Sigmoid(),
+		torch.nn.Linear(nb_neurones_cc, label_train.shape[1])
+	)
+
+	# init les poids du modèle
+	torch.nn.init.uniform_(model[0].weight, -0.001, 0.001)
+	torch.nn.init.uniform_(model[2].weight, -0.001, 0.001)
+
 	# on initiliase l'optimiseur
 	loss_func = torch.nn.MSELoss(reduction='sum')
 	optim = torch.optim.SGD(model.parameters(), lr=eta)
@@ -37,7 +46,7 @@ if __name__ == '__main__':
 			# on calcule la sortie du modèle
 			y = model(x)
 			# on met à jour les poids
-			loss = loss_func(t,y)
+			loss = loss_func(t, y)
 			loss.backward()
 			optim.step()
 			optim.zero_grad()
@@ -51,4 +60,4 @@ if __name__ == '__main__':
 			# on regarde si la sortie est correcte
 			acc += torch.argmax(y,1) == torch.argmax(t,1)
 		# on affiche le pourcentage de bonnes réponses
-		print(acc/data_test.shape[0])
+		print(acc/data_test.shape[0] * 100)
