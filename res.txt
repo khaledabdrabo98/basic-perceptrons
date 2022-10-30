@@ -1,1 +1,0 @@
-tensor([10.8429])tensor([10.0857])tensor([29.1429])tensor([29.8429])tensor([40.3429])tensor([53.4571])tensor([49.9571])tensor([66.3857])tensor([65.1857])tensor([71.0714])
