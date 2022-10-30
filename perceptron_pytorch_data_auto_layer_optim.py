@@ -15,7 +15,7 @@ if __name__ == '__main__':
 	batch_size = 5 # nombre de données lues à chaque fois
 	nb_epochs = 10 # nombre de fois que la base de données sera lue
 	eta = 0.001 # taux d'apprentissage
-	nb_neurones_cc = 4 # nombre de neurones dans la couche cachée 
+	nb_neurones_cc = 60 # nombre de neurones dans la couche cachée
 	
 	# on lit les données
 	((data_train,label_train),(data_test,label_test)) = torch.load(gzip.open('mnist.pkl.gz'))
@@ -33,8 +33,8 @@ if __name__ == '__main__':
 	)
 
 	# init les poids du modèle
-	torch.nn.init.uniform_(model[0].weight, -0.001, 0.001)
-	torch.nn.init.uniform_(model[2].weight, -0.001, 0.001)
+	torch.nn.init.uniform_(model[0].weight, -0.001, 0.001)  #-0.001, 0.001
+	torch.nn.init.uniform_(model[2].weight, -0.001, 0.001)	#-0.001, 0.001
 
 	# on initiliase l'optimiseur
 	loss_func = torch.nn.MSELoss(reduction='sum')

@@ -13,9 +13,9 @@ import gzip, numpy, torch
     
 if __name__ == '__main__':
 	batch_size = 5 # nombre de données lues à chaque fois
-	nb_epochs = 10 # nombre de fois que la base de données sera lue
-	eta = 0.05 # taux d'apprentissage
-	nb_neurones_cc = 10 # nombre de neurones dans la couche cachée 
+	nb_epochs = 20 # nombre de fois que la base de données sera lue
+	eta = 0.01 # taux d'apprentissage
+	nb_neurones_cc = 60 # nombre de neurones dans la couche cachée 
 	
 	# on lit les données
 	((data_train,label_train),(data_test,label_test)) = torch.load(gzip.open('mnist.pkl.gz'))
@@ -24,10 +24,6 @@ if __name__ == '__main__':
 	test_dataset = torch.utils.data.TensorDataset(data_test,label_test)
 	train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 	test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
-
-	#2cc/200neurones/0.01 eta
-	#3cc/10neurones/0.05 eta
-
 
 	# on initialise le modèle et ses poids
 	model = torch.nn.Sequential(

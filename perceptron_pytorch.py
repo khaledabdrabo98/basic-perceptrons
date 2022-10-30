@@ -24,10 +24,11 @@ if __name__ == '__main__':
 
     batch_size = 5  # nombre de données lues à chaque fois
     nb_epochs = 10  # nombre de fois que la base de données sera lue
-    eta = 0.001  # taux d'apprentissage
+    eta = 0.001  # taux d'apprentissage 0.001
     w_min = -0.001  # poids minimum
     w_max = 0.001  # poids maximum
     nb_neurones_cc = 784 # nombre de neurones de la couche cachée
+    #f = open("res.txt", "a")
 
     # on lit les données
     ((data_train, label_train), (data_test, label_test)) = torch.load(gzip.open('mnist.pkl.gz'))
@@ -96,3 +97,5 @@ if __name__ == '__main__':
             acc += torch.argmax(y, 1) == torch.argmax(t, 1)
         # on affiche le pourcentage de bonnes réponses
         print(acc / nb_data_test * 100)
+        #f.write(str(acc / nb_data_test * 100))
+    #f.close()
