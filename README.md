@@ -10,12 +10,12 @@
 ## Comment l'utiliser ?
 Pour tester l'implementation du Perceptron avec des tensors
 ```
-python3 perceptron_tensors.py
+python3 perceptron_pytorch.py
 ```
 
 Pour tester l'implementation du Perceptron avec une couche cachée (avec `PyTroch`)
 ```
-python3 perceptron_pytorch.py
+python3 perceptron_pytorch_data_auto_layer_optim.py
 ```
 
 Pour tester l'implementation du Perceptron avec deux couches cachées (avec `PyTorch`)
